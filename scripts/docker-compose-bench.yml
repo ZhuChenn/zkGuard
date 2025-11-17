@@ -1,14 +1,14 @@
 services:
-  zkverify-bench:
-    image: ${IMAGE:-zkverify}:${TAG:-bench}
+  zkguard-bench:
+    image: ${IMAGE:-zkguard}:${TAG:-bench}
     build:
       context: ${SOURCE_ROOT?err_unset}
-      dockerfile: ./docker/dockerfiles/zkv-relay.Dockerfile
+      dockerfile: ./docker/dockerfiles/zkguard.Dockerfile
       args:
         - PROFILE=production
         - FEATURES=runtime-benchmarks
     entrypoint: [ "" ]
-    container_name: zkverify-bench
+    container_name: zkguard-bench
     user: "${USER_ID:-0}:${GROUP_ID:-0}"
     volumes:
       - "${SOURCE_ROOT?err_unset}:/data/benchmark:rw"

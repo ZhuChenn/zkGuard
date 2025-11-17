@@ -1,9 +1,9 @@
 services:
-  zkverify-bench:
-    image: ${IMAGE:-zkverify}:${TAG:-bench}
+  zkguard-bench:
+    image: ${IMAGE:-zkguard}:${TAG:-bench}
     build:
       context: ${SOURCE_ROOT?err_unset}
-      dockerfile: ./docker/dockerfiles/zkv-relay.Dockerfile
+      dockerfile: ./docker/dockerfiles/zkguard.Dockerfile
       args:
         - PROFILE=production
         - FEATURES=runtime-benchmarks

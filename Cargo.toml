@@ -1,14 +1,14 @@
 [workspace.package]
 authors = ["Horizen Labs <admin@horizenlabs.io>"]
 edition = "2021"
-repository = "https://github.com/zkVerify/zkVerify"
+repository = "https://github.com/zkGuard/zkGuard"
 homepage = "https://horizenlabs.io"
 
 [workspace]
 resolver = "2"
 
 members = [
-    "runtime/zkverify",
+    "runtime/zkguard",
     "primitives/hp-dispatch",
     "primitives/hp-on-proof-verified",
     "native",
@@ -29,16 +29,16 @@ members = [
     "verifiers/plonky2",
     "verifiers/sp1",
     "utils/native-cache",
-    "relay-node",
-    "relay-node/benchmarks",
-    "relay-node/cli",
-    "relay-node/service",
-    "relay-node/test/client",
-    "relay-node/test/service",
-    "relay-node/test/runtime",
-    "relay-node/test/runtime/constants",
-    "relay-node/test/subsystem-helpers",
-    "relay-node/test/substrate/client",
+    "program",
+    "program/benchmarks",
+    "program/cli",
+    "program/service",
+    "program/test/client",
+    "program/test/service",
+    "program/test/runtime",
+    "program/test/runtime/constants",
+    "program/test/subsystem-helpers",
+    "program/test/substrate/client",
     "rpc/aggregate",
     "rpc/aggregate/runtime-api",
     "rpc/vk_hash",
@@ -119,9 +119,9 @@ ezkl-no-std = { git = "https://github.com/zkVerify/ezkl_verifier.git", default-f
 ultrahonk-no-std = { git = "https://github.com/zkVerify/ultrahonk_verifier.git", default-features = false, tag = "v0.2.1" }
 ultraplonk-no-std = { git = "https://github.com/zkVerify/ultraplonk_verifier.git", default-features = false, tag = "v0.4.0" }
 
-zkv-benchmarks = { path = "relay-node/benchmarks" }
+zkguard-benchmarks = { path = "program/benchmarks" }
 native-cache = { path = "utils/native-cache" }
-zkv-runtime = { path = "runtime/zkverify", default-features = false }
+zkguard-runtime = { path = "runtime/zkguard", default-features = false }
 
 # These dependencies are used for the node template's RPCs
 sc-rpc = { version = "43.0.0" }
@@ -229,8 +229,8 @@ substrate-build-script-utils = { version = "11.0.0" }
 
 # Used for relay chain
 
-zkv-cli = { path = "relay-node/cli" }
-service = { package = "zkv-service", path = "relay-node/service" }
+zkguard-cli = { path = "program/cli" }
+service = { package = "zkguard-service", path = "program/service" }
 
 polkadot-node-core-pvf = { version = "21.0.1" }
 polkadot-node-core-pvf-prepare-worker = { version = "17.0.1" }

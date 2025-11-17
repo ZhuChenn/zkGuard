@@ -1,95 +1,89 @@
-# Relay Chain
+# Program Deployment
 
-In order to start a relay chain network you need to do some steps before:
+In order to deploy and test the zkGuard program you need to do some steps before:
 
-- Compile `zkv-relay` and `paratest` nodes
-- Generate relay chain spec file
-- Generate parachain chain spec, genesis and wasm code
-- Create the docker images for relay chain and parachain nodes
-- Start compose file
-- Start Parachain
+- Compile the program
+- Deploy to localnet or devnet
+- Run tests
+- Create the docker images for testing
+- Start compose file for local development
 
-## Compile `zkv-relay` and `paratest` nodes
-
-```sh
-cargo build --release -p zkv-relay --features "fast-runtime"
-cargo build --release -p paratest-node
-```
-
-## Generate relay chain spec file
+## Compile the Program
 
 ```sh
-./target/release/zkv-relay build-spec \
-        --chain local \
-        --disable-default-bootnode > staging/plain-chainspec.json && \
-    ./target/release/zkv-relay build-spec \
-        --chain staging/plain-chainspec.json \
-        --disable-default-bootnode --raw > staging/raw-chainspec.json
+cargo build-sbf --release
 ```
 
-## Generate parachain chain spec, genesis and wasm code
+This will compile the program to BPF bytecode, which is the format Solana uses for on-chain programs.
+
+## Deploy to Localnet
+
+First, start a local Solana test validator:
 
 ```sh
-./target/release/paratest-node build-spec \
-        --chain local \
-        --disable-default-bootnode > staging/plain-parachain-chainspec.json && \
-    ./target/release/paratest-node build-spec \
-        --chain staging/plain-parachain-chainspec.json \
-        --disable-default-bootnode --raw > staging/raw-parachain-chainspec.json && \
-    ./target/release/paratest-node export-genesis-state \
-        --chain staging/raw-parachain-chainspec.json \
-        staging/paratest-genesis && \
-    ./target/release/paratest-node export-genesis-wasm \
-        --chain staging/raw-parachain-chainspec.json \
-        staging/paratest-wasm
+solana-test-validator
 ```
 
-## Create the docker images for relay chain and parachain nodes
+In another terminal, deploy the program:
 
 ```sh
-docker/scripts/build-zkv-relay-image-injected.sh
-docker/scripts/build-paratest-image-injected.sh
+solana program deploy target/deploy/zkguard.so
 ```
 
-## Start compose file
+## Deploy to Devnet
+
+Set your cluster to devnet and deploy:
 
 ```sh
-docker compose -f docker/compose/zkv-relay-docker-compose.yaml up -d --remove-orphans
+solana config set --url devnet
+solana airdrop 2
+solana program deploy target/deploy/zkguard.so
 ```
 
-This compose starts 3 relaychain nodes and 3 parachain nodes:
+## Run Tests
 
-- 2 relaychain validators (alice and bob)
-- 2 parachain collators (alice and bob)
-- 1 rpc gateway node for relay chain network that expose `9944` port for rpc and `30333` port for p2p
-- 1 rpc gateway node for parachain network that expose `8844` port for rpc and `20333` port for p2p
+Run the test suite:
 
-## Start Parachain
+```sh
+cargo test
+cargo test-sbf
+```
 
-Now the complete network is up, and we can initialize the parachain:
+## Create Docker Images for Testing
 
-- Point polkadot.js to the local chain at `ws://127.0.0.1:9944`
-- Initialize parachain: _Developer_->_Sudo_->`parasSudoWrapper` pallet->`sudoScheduleParaInitialize` and set following data:
-  - `id`: `1599`.
-  - `genesisHead`: Click file upload and upload the genesis state file in `staging/paratest-genesis`.
-  - `validationCode`: Click file upload and upload the WebAssembly runtime file in `staging/paratest-wasm`.
-  - `paraKind`: Select `Yes`.
+```sh
+docker/scripts/build-zkguard-image-injected.sh
+```
 
-Now just wait (up to 2 epochs/minutes) and the parchain should start to forge the blocks regularly every 12 seconds.
+## Start Docker Compose for Local Development
 
-You can access the parachain interface through polkadot.js at `ws://localhost:8844`.
+```sh
+docker-compose -f docker/compose/zkguard-docker-compose.yaml up
+```
 
-## Extra
+This will start a local Solana validator and the necessary services for testing.
 
-- To stop the chain use `docker compose -f docker/compose/zkv-relay-docker-compose.yaml down` with `-v` flag
-  if you need also clear the chain
-- To inspect the logs of a service use `docker compose -f docker/compose/zkv-relay-docker-compose.yaml logs <service>`
-  where the available services are
-  - `node_alice` relay chain alice validator
-  - `node_bob` relay chain bob validator
-  - `collator_alice` relay chain alice collator
-  - `collator_bob` relay chain bob collator
-  - `local_node` relay chain gateway node
-  - `local_paranode` parachain gateway node
-- To define node configurations and change the nodes log levels look at the files in
-  `docker/resources/envs/[relay|para]` folders
+## Program Instructions
+
+The zkGuard program supports the following main instructions:
+
+- `VerifyGroth16`: Verify a Groth16 proof
+- `VerifyPlonk`: Verify a PLONK/UltraPLONK proof  
+- `VerifyFFlonk`: Verify an FFLONK proof
+- `VerifyRisc0`: Verify a RISC Zero proof
+- `VerifySP1`: Verify an SP1 proof
+- `AggregateProofs`: Aggregate multiple proofs for batch verification
+- `UpdateVerificationKey`: Update a verification key (requires authority)
+
+## Account Structure
+
+The program uses the following account structure:
+
+- **Verification Key Accounts**: Store verification keys for different proof systems
+- **Proof Accounts**: Store submitted proofs and their verification status
+- **Aggregation Accounts**: Store aggregated proofs for batch verification
+- **Program Derived Addresses (PDAs)**: Used for secure account management
+
+## Fee Model
+
+Verification fees are paid in SOL (Solana's native token). Fees are calculated based on computational complexity and are collected by the program.

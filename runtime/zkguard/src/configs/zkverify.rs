@@ -16,7 +16,7 @@
 use crate::{runtime_version, RuntimeVersion, RUNTIME_API_VERSIONS};
 use alloc::borrow::Cow;
 
-runtime_version!("zkv-runtime");
+runtime_version!("zkguard-runtime");
 
 pub const SS58_PREFIX: u16 = super::SS58_ZKV_PREFIX;
 

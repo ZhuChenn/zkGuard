@@ -6,10 +6,10 @@
 # - npm
 # - yarn
 # The script automatically downloads zombienet binary and saves it into the zombienet-tests/bin folder.
-# It also looks for a compiled zkv-relay binary in the folder target/release, hence make sure to 
-# have a freshly compiled version of zkv-relay in this folder.
+# It also looks for a compiled zkguard binary in the folder target/release, hence make sure to 
+# have a freshly compiled version of zkguard in this folder.
 # Optionally, this script can be launched with the '--debug' switch, which makes it look for
-# the zkv-relay binary in the target/debug folder instead.
+# the zkguard binary in the target/debug folder instead.
 
 # ANSI color handles
 TXT_BIBLU="\033[94;1m"
@@ -27,7 +27,7 @@ TOT_EXEC_TESTS=0
 TOT_FAIL_TESTS=0
 EXIT_STATUS=0
 
-NETWORK="${NETWORK:-zkverify}"
+NETWORK="${NETWORK:-zkguard}"
 
 # Check operating system and set variables for binary name
 OS="$(uname)"
@@ -95,9 +95,9 @@ fi
 echo -e "${TXT_BIGRN}INFO: ${TXT_BIBLK}Running tests with a ${PROFILE} build${TXT_NORML}"
 
 HAS_BINARIES="true"
-if [[ ! ( -f "../target/${PROFILE}/zkv-relay" && -f "../target/${PROFILE}/paratest-node" ) ]]; then
-    echo -e "${TXT_BIRED}ERROR: ${TXT_BIBLK}zkv-relay and/or paratest-node binary not found. Compile zkv-relay and paratest-node in ${PROFILE} mode and re-launch this script${TXT_NORML}"
-    echo -e "       ${TXT_BIBLK}cargo build -p zkv-relay -p paratest-node --${PROFILE} --features fast-runtime${TXT_NORML}"
+if [[ ! ( -f "../target/${PROFILE}/zkguard" && -f "../target/${PROFILE}/paratest-node" ) ]]; then
+    echo -e "${TXT_BIRED}ERROR: ${TXT_BIBLK}zkguard and/or paratest-node binary not found. Compile zkguard and paratest-node in ${PROFILE} mode and re-launch this script${TXT_NORML}"
+    echo -e "       ${TXT_BIBLK}cargo build -p zkguard -p paratest-node --${PROFILE} --features fast-runtime${TXT_NORML}"
     HAS_BINARIES="false"
 fi
 
