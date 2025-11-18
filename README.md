@@ -210,7 +210,7 @@ For more information, see [docker/README.md](docker/README.md).
 
 ## Documentation
 
-The official documentation is available at [docs.zkguard.io](https://docs.zkguard.io/).
+The official documentation is available at [zkguard.tech/docs](https://www.zkguard.tech/docs).
 
 ## License
 
